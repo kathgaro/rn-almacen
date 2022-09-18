@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, FlatList, TouchableOpacity, Modal, } from 'react-native';
 
+import { CustomModal, AddTask } from "./components/index";
 
 // Estilos creados como un objetos
 const styles = StyleSheet.create({
@@ -10,33 +11,18 @@ const styles = StyleSheet.create({
   // justifyContent: 'center',
    //alignItems: 'center',
   },
-  inputContainer:{
-    marginTop: 50,
-    marginBottom: 20,
-    marginHorizontal: 20,
-   flexDirection: 'row',
-   justifyContent: 'space-between',
-  },
-  input: {
-    width: '75%',
-    //marginBottom: 25,
-    borderBottomColor: '#2C514C',
-    borderBottomWidth: 1,
-    height: 40,
-    color: '#2C514C',
-    //flex: 1,
-    //marginRight: 20,
-   // fontSize: 20,
-  },
+ 
   itemList:{
     //ocupa todo el espacio disponible
     flex: 1,
     marginHorizontal: 20,
     marginVertical: 20,
+    
   },
   itemContainer:{
     flex: 1,
-    backgroundColor: '#2C514C',
+    borderColor: '#c69b64',
+    borderWidth: 2,
     alignItems: 'center',
     marginVertical: 10,
     flexDirection: 'row',
@@ -47,23 +33,24 @@ const styles = StyleSheet.create({
    // width: '74%',
   },
   item:{
-   color: 'white',
-   fontSize: 16,
+   color: '#c69b64',
+   fontSize: 18,
   },
  
   delete: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'white',
+    color: '#C2C2C2',
   },
   modalContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 20,
     marginTop: 30,
+    
   },
   modalTitle: {
-    fontSize: 16,
+    fontSize: 14,
   },
   modalMessageContainer:{
     justifyContent: 'center',
@@ -71,11 +58,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   modalMessage:{
-    fontSize: 14,
+    fontSize: 16,
   }, 
  
   selectedTask:{
-    fontSize: 16,
+    fontSize: 20,
     color: 'black',
     fontWeight: 'bold',
   },
@@ -98,6 +85,7 @@ export default function App() {
 
   
   const onHandleChangeText = (text) => {
+    console.log('se ejecuta: ', text),
     setTask(text);
   }
 
@@ -110,57 +98,50 @@ export default function App() {
     setTask('');
   }
 
-const onHandleModal = ( id ) => {
-  setModalVisible(!modalVisible);
-  setSelectedTask(tasks.find((item) => item.id == id))
-  console.warn(id);
-}
-const renderItem = ({item}) => (
-  <View style={styles.itemContainer}>
-    <Text style={styles.item}> {item.value} </Text>
-    <TouchableOpacity onPress={() => onHandleModal(item.id)}>
-      <Text style={styles.delete}> x </Text>
-    </TouchableOpacity>
-  </View>      
-)
+  const onHandleModal = ( id ) => {
+    setModalVisible(!modalVisible);
+    setSelectedTask(tasks.find((item) => item.id == id))
+    console.warn(id);
+  }
+  const renderItem = ({item}) => (
+    <View style={styles.itemContainer}>
+      <Text style={styles.item}> {item.value} </Text>
+      <TouchableOpacity onPress={() => onHandleModal(item.id)}>
+        <Text style={styles.delete}> x </Text>
+      </TouchableOpacity>
+    </View>      
+  )
 
-const onHandleDeleteItem = (id) =>{
-  setTasks(tasks.filter((item) => item.id !== id));
-  setSelectedTask(null);
-  setModalVisible(!modalVisible);
-}
+  const onHandleDeleteItem = (id) =>{
+    setTasks(tasks.filter((item) => item.id !== id));
+    setSelectedTask(null);
+    setModalVisible(!modalVisible);
+  }
   return (
     //View - contenedor principal
+    //  
     <View style={styles.container}> 
-      <View style={styles.inputContainer}>
-        <TextInput 
-        placeholder='Ingresa texto ' 
-        style={styles.input} 
-        selectionColor='#E3C0D3'
-        onChangeText={onHandleChangeText}
-        //Asigno el valor del estado
-        value={task}
-        /> 
-        <Button 
-        title='add' 
-        /**
-         * onPress={() => console.warn('Aun no funciona este boton!')} 
-         * 
-         * Agrego item con onPress={addItem} 
-         */
-        onPress={addItem} 
-        color='#2C514C'/>
-      </View>
       
-        <FlatList
-          style={styles.itemList}
-          data={tasks}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          showsHorizontalScrollIndicator={false}
-        />
+      <AddTask
+        item={task}
+        onChangeText={onHandleChangeText }
+        placeholder= 'Escribe el producto que buscas'
+        addItem={ addItem}
+        selectionColor= '#c69b64'
+        placeholderTextColor='#C2C2C2'
+        textButton='Agregar'
+        color='#c69b64'
+      />
+      
+      <FlatList
+        style={styles.itemList}
+        data={tasks}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+        showsHorizontalScrollIndicator={false}
+      />
 
-        <Modal animationType='slide' visible={modalVisible} >
+        <CustomModal animationType='slide' visible={modalVisible} style={styles.modal}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Detalle del item</Text>
           </View>
@@ -174,15 +155,15 @@ const onHandleDeleteItem = (id) =>{
             <Button 
               title='eliminar'
               onPress={() => onHandleDeleteItem(selectedTask?.id)}
-              color='gray'
+              color='#c69b64'
              />
              <Button 
               title='Cancelar'
               onPress={() => setModalVisible(!modalVisible)}
-              color='black'
+              color='#C2C2C2'
              />
           </View>
-        </Modal>
+        </CustomModal>
     </View>
   );
 }
